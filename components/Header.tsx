@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react'
 import Button from './Button'
 import useAuthModal from '@/hooks/useAuthModal'
 import { useUser } from '@/hooks/useUser'
+import usePlayer from '@/hooks/usePlayer'
 
 interface HeaderProps {
   children: React.ReactNode
@@ -23,6 +24,7 @@ const Header: React.FC<HeaderProps> = ({ children, className }) => {
   const router = useRouter()
   const authModal = useAuthModal()
   const [isMounted, setIsMounted] = useState(false)
+  const player = usePlayer()
 
   useEffect(() => {
     setIsMounted(true)
@@ -33,6 +35,7 @@ const Header: React.FC<HeaderProps> = ({ children, className }) => {
 
   const handleLogout = async () => {
     const { error } = await supabaseClient.auth.signOut()
+    player.reset()
     router.refresh()
 
     if (error) {
@@ -146,12 +149,12 @@ const Header: React.FC<HeaderProps> = ({ children, className }) => {
                 <Button onClick={handleLogout} className="bg-white px-6 py-2">
                   Logout
                 </Button>
-                <Button
+                {/* <Button
                   onClick={() => router.push('/account')}
                   className="bg-white"
                 >
                   <FaUserAlt />
-                </Button>
+                </Button> */}
               </div>
             ) : (
               <>
