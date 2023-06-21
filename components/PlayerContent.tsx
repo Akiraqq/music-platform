@@ -95,8 +95,12 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
     <div className="grid grid-cols-2 md:grid-cols-3 h-full">
       <div className="flex w-full justify-start">
         <div className="flex items-center gap-x-4">
-          <MediaItem data={song} />
-          <LikeButton songId={song.id} />
+          <div className="order-1 sm:order-3">
+            <LikeButton songId={song.id} />
+          </div>
+          <div className="order-2">
+            <MediaItem data={song} />
+          </div>
         </div>
       </div>
 
@@ -105,15 +109,26 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
       flex
       md:hidden
       col-auto
+      gap-x-3
       justify-end
       items-center
       "
       >
+        <AiFillStepBackward
+          onClick={onPlayPrevius}
+          size={25}
+          className="
+        text-neutral-400
+        cursor-pointer
+        hover:text-white
+        transition
+        "
+        />
         <div
           onClick={handlePlay}
           className="
-        h-10
-        w-10
+        h-9
+        w-9
         flex
         items-center
         justify-center
@@ -123,8 +138,18 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
         cursor-pointer
         "
         >
-          <Icon size={30} className="text-black" />
+          <Icon size={25} className="text-black" />
         </div>
+        <AiFillStepForward
+          onClick={onPlayNext}
+          size={25}
+          className="
+       text-neutral-400
+       cursor-pointer
+       hover:text-white
+       transition
+       "
+        />
       </div>
 
       <div
