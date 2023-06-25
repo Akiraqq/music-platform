@@ -4,6 +4,7 @@ import { BsPauseFill, BsPlayFill } from 'react-icons/bs'
 import { AiFillStepBackward, AiFillStepForward } from 'react-icons/ai'
 import { HiSpeakerXMark, HiSpeakerWave } from 'react-icons/hi2'
 import { useEffect, useState } from 'react'
+import { SkewLoader } from 'react-spinners'
 import useSound from 'use-sound'
 
 import { Song } from '@/types'
@@ -22,6 +23,10 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
   const player = usePlayer()
   const [volume, setVolume] = useState(1)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(0)
+
+  const [isLoaded, setIsLoaded] = useState(false)
 
   const Icon = isPlaying ? BsPauseFill : BsPlayFill
   const VolumeIcon = volume === 0 ? HiSpeakerXMark : HiSpeakerWave
@@ -58,7 +63,10 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
 
   const [play, { pause, sound }] = useSound(songUrl, {
     volume: volume,
-    onplay: () => setIsPlaying(true),
+    onplay: () => {
+      setIsLoaded(true)
+      setIsPlaying(true)
+    },
     onend: () => {
       setIsPlaying(false)
       onPlayNext()
@@ -67,15 +75,38 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
     format: ['mp3'],
   })
 
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60)
+    const seconds = Math.floor(time % 60)
+      .toString()
+      .padStart(2, '0')
+    return `${minutes}:${seconds}`
+  }
+
   useEffect(() => {
+    setIsPlaying(false)
+    setDuration(sound?.duration() || 0)
     sound?.play()
 
+    const updateCurrentTime = () => {
+      if (sound) {
+        setCurrentTime(sound?.seek() || 0)
+      }
+    }
+
+    const intervalId = setInterval(updateCurrentTime, 1000)
+
     return () => {
+      clearInterval(intervalId)
       sound?.unload()
     }
   }, [sound])
 
   const handlePlay = () => {
+    if (!isLoaded) {
+      return
+    }
+
     if (!isPlaying) {
       play()
     } else {
@@ -91,15 +122,27 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
     }
   }
 
+  const progress = (currentTime / duration) * 100
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 h-full">
+    <div className="grid grid-cols-2 lg:grid-cols-3 h-full relative max-w-[1920px]">
+      {/* tst */}
+      <div
+        className="absolute top-0 left-[-16px] h-1 bg-blue-500 rounded"
+        style={{ width: `${progress}%` }}
+      ></div>
+      {/* tst */}
+
       <div className="flex w-full justify-start">
         <div className="flex items-center gap-x-4">
-          <div className="order-1 sm:order-3">
+          <div className="order-1 sm:order-4">
             <LikeButton songId={song.id} />
           </div>
+          <div className="hidden lg:flex text-neutral-400 text-sm sm:order-3 w-[90px]">
+            {`${formatTime(currentTime)} / ${formatTime(duration)}`}
+          </div>
           <div className="order-2">
-            <MediaItem data={song} />
+            <MediaItem data={song} style />
           </div>
         </div>
       </div>
@@ -107,7 +150,7 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
       <div
         className="
       flex
-      md:hidden
+      lg:hidden
       col-auto
       gap-x-3
       justify-end
@@ -138,7 +181,11 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
         cursor-pointer
         "
         >
-          <Icon size={25} className="text-black" />
+          {isLoaded ? (
+            <Icon size={25} className="text-black" />
+          ) : (
+            <SkewLoader color="black" size={10} />
+          )}
         </div>
         <AiFillStepForward
           onClick={onPlayNext}
@@ -156,7 +203,7 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
         className="
       hidden
       h-full
-      md:flex
+    lg:flex
       justify-center
       items-center
       w-full
@@ -188,7 +235,11 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
         cursor-pointer
         "
         >
-          <Icon size={30} className="text-black" />
+          {isLoaded ? (
+            <Icon size={30} className="text-black" />
+          ) : (
+            <SkewLoader color="black" size={13} />
+          )}
         </div>
         <AiFillStepForward
           onClick={onPlayNext}
@@ -202,7 +253,7 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
         />
       </div>
 
-      <div className="hidden md:flex w-full justify-end pr-2">
+      <div className="hidden lg:flex w-full justify-end pr-2">
         <div className="flex items-center gap-x-2 w-[120px]">
           <VolumeIcon
             onClick={toggleMute}

@@ -9,9 +9,10 @@ import usePlayer from '@/hooks/usePlayer'
 interface MediaItemProps {
   onClick?: (id: string) => void
   data: Song
+  style?: boolean
 }
 
-const MediaItem: React.FC<MediaItemProps> = ({ onClick, data }) => {
+const MediaItem: React.FC<MediaItemProps> = ({ onClick, data, style }) => {
   const imageUrl = useLoadImage(data)
   const player = usePlayer()
 
@@ -26,7 +27,7 @@ const MediaItem: React.FC<MediaItemProps> = ({ onClick, data }) => {
   return (
     <div
       onClick={handleClick}
-      className="
+      className={`
     flex
     items-center
     gap-x-3
@@ -35,7 +36,8 @@ const MediaItem: React.FC<MediaItemProps> = ({ onClick, data }) => {
     w-full
     p-2
     rounded-md
-    "
+    ${!style && player.activeId === data.id && 'bg-neutral-800/50'}
+    `}
     >
       <div
         className="

@@ -8,4 +8,6 @@ body,
   height: 100%;
   background-color: black;
   color-scheme: dark;
+  max-width: 1940px;
+  margin: auto;
 }

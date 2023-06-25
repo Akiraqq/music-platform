@@ -9,6 +9,7 @@ import useUploadModal from '@/hooks/useUploadModal'
 import { Song } from '@/types'
 import MediaItem from './MediaItem'
 import useOnPlay from '@/hooks/useOnPlay'
+import useMobileSidebar from '@/hooks/useMobileSidebar'
 
 interface LibraryProps {
   songs: Song[]
@@ -18,6 +19,7 @@ const Library: React.FC<LibraryProps> = ({ songs }) => {
   const authModal = useAuthModal()
   const uploadModal = useUploadModal()
   const { user } = useUser()
+  const { onClose } = useMobileSidebar()
 
   const onPlay = useOnPlay(songs)
 
@@ -25,6 +27,7 @@ const Library: React.FC<LibraryProps> = ({ songs }) => {
     if (!user) {
       return authModal.onOpen()
     }
+    onClose()
     return uploadModal.onOpen()
   }
   return (
@@ -39,7 +42,11 @@ const Library: React.FC<LibraryProps> = ({ songs }) => {
         "
       >
         <div className="inline-flex items-center gap-x-2">
-          <TbPlaylist className="text-neutral-400" size={26} />
+          <TbPlaylist
+            className="text-neutral-400 cursor-pointer"
+            size={26}
+            onClick={() => onClose()}
+          />
           <p className="text-neutral-400 font-medium text-base">Your Library</p>
         </div>
         <AiOutlinePlus

@@ -14,6 +14,8 @@ import Button from './Button'
 import useAuthModal from '@/hooks/useAuthModal'
 import { useUser } from '@/hooks/useUser'
 import usePlayer from '@/hooks/usePlayer'
+import { TbPlaylist } from 'react-icons/tb'
+import useMobileSidebar from '@/hooks/useMobileSidebar'
 
 interface HeaderProps {
   children: React.ReactNode
@@ -25,6 +27,7 @@ const Header: React.FC<HeaderProps> = ({ children, className }) => {
   const authModal = useAuthModal()
   const [isMounted, setIsMounted] = useState(false)
   const player = usePlayer()
+  const { onOpen } = useMobileSidebar()
 
   useEffect(() => {
     setIsMounted(true)
@@ -134,6 +137,23 @@ const Header: React.FC<HeaderProps> = ({ children, className }) => {
           >
             <BiSearch className="text-black" size={20} />
           </button>
+          {/* test */}
+          <button
+            onClick={() => onOpen()}
+            className="
+          rounded-full
+          p-2
+          bg-white
+          flex
+          items-center
+          justify-center
+          hover:opacity-75
+          transition
+          "
+          >
+            <TbPlaylist className="text-black" size={20} />
+          </button>
+          {/* test */}
         </div>
         <div
           className="
